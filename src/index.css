@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    box-sizing: border-box;
+}
+  
+body {
+    margin: 0px;
+    font-family: Monaco, sans-serif;
+}
+
+.simple-keyboard.hg-layout-default .hg-button.correct {
+    background: rgb(22 163 74);;
+}
+
+.simple-keyboard.hg-layout-default .hg-button.present {
+    background: rgb(250 204 21);
+}
+
+.simple-keyboard.hg-layout-default .hg-button.absent {
+    background: rgb(107 114 128);
+}
