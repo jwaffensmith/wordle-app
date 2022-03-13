@@ -12,7 +12,7 @@ const GameInput = ({ word }) => {
     
     // word guesses
     const [ guess, setGuess ] = useState([]);
-    const [ wordsGuessed, setWordsGuessed ] = useState([]);
+    const [ guessedWords, setGuessedWords ] = useState([]);
     const [ rowIndex, setRowIndex ] = useState(0);
 
     // add classes to virtual keyboard buttons
@@ -45,7 +45,7 @@ const GameInput = ({ word }) => {
         const key = getLocalStorageKey("wordsGuessed");
         const guessWordList = JSON.parse(localStorage.getItem(key));
         if (guessWordList) {
-            setWordsGuessed(guessWordList)
+            setGuessedWords(guessWordList)
         }
     }, []);
 
@@ -72,7 +72,7 @@ const GameInput = ({ word }) => {
         const key = getLocalStorageKey("wordsGuessed");
         const guessWordList = JSON.parse(localStorage.getItem(key));
         if (guessWordList) {
-            setWordsGuessed(guessWordList)
+            setGuessedWords(guessWordList)
         }
     }, []);
 
@@ -80,7 +80,7 @@ const GameInput = ({ word }) => {
         const key = getLocalStorageKey("wordsGuessed");
         const guessWordList = JSON.parse(localStorage.getItem(key));
         if (guessWordList) {
-            setWordsGuessed(guessWordList)
+            setGuessedWords(guessWordList)
         }
     }, []);
 
@@ -127,13 +127,13 @@ const GameInput = ({ word }) => {
         const absentLetterKey = getLocalStorageKey("absentLetters");
         const startGameKey = getLocalStorageKey("startGame");
         localStorage.setItem(`${rowKey}`, JSON.stringify(rowIndex));
-        localStorage.setItem(`${wordGuessKey}`, JSON.stringify(wordsGuessed));
+        localStorage.setItem(`${wordGuessKey}`, JSON.stringify(guessedWords));
         localStorage.setItem(`${statusKey}`, gameStatus);
         localStorage.setItem(`${presentLetterKey}`, presentLetters);
         localStorage.setItem(`${correctLetterKey}`, correctLetters);
         localStorage.setItem(`${absentLetterKey}`, absentLetters);
         localStorage.setItem(`${startGameKey}`, JSON.stringify(startGame));
-	}, [rowIndex, wordsGuessed, gameStatus, presentLetters, correctLetters, absentLetters, startGame]);
+	}, [rowIndex, guessedWords, gameStatus, presentLetters, correctLetters, absentLetters, startGame]);
 
 
     useEffect(() => {
@@ -167,7 +167,7 @@ const GameInput = ({ word }) => {
     function checkWordList() {
         const wordGuess = guess.join('');
         if (words.includes(wordGuess.toLowerCase())) {
-            setWordsGuessed((prev) => [...prev, guess.join('')]);
+            setGuessedWords((prev) => [...prev, guess.join('')]);
             setGuess([]);
             setRowIndex((index) => (index + 1));
             virtualKeyboardClasses();
@@ -272,7 +272,7 @@ const GameInput = ({ word }) => {
             <main>
                 <GameBoard 
                 guess={guess}
-                wordsGuessed={wordsGuessed}
+                guessedWords={guessedWords}
                 rowIndex={rowIndex}
                 word={word}
                 gameStatus={gameStatus}
@@ -355,4 +355,4 @@ const GameInput = ({ word }) => {
     )
 }
 
-export default GameInput; 
+export default GameInput;  

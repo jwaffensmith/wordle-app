@@ -2,7 +2,7 @@ import ActiveRow  from "./rows/ActiveRow";
 import InactiveRow from "./rows/InactiveRow";
 import CompletedRows from "./rows/CompletedRows";
 
-const GameBoard = ( { word, wordsGuessed, rowIndex, guess, gameStatus, showAlert } ) => {
+const GameBoard = ( { word, guessedWords, rowIndex, guess, gameStatus, showAlert } ) => {
     
     return (
         <div className="mx-1 flex justify-center">
@@ -28,17 +28,17 @@ const GameBoard = ( { word, wordsGuessed, rowIndex, guess, gameStatus, showAlert
                 md:mx-10
                 md:my-5
                 ">
-                <CompletedRows wordsGuessed={wordsGuessed} guess={guess} word={word} rowIndex={rowIndex}/>
+                <CompletedRows guessedWords={guessedWords} guess={guess} word={word} rowIndex={rowIndex}/>
 
                 { rowIndex <= 5 && gameStatus !== "You won!" ?
                     (<ActiveRow guess={guess} showAlert={showAlert}/>) : (<></>)
                 }
 
                 { gameStatus !== "You won!" ?
-                (Array.from({length: 5 - wordsGuessed.length}).map((_, index) => {
+                (Array.from({length: 5 - guessedWords.length}).map((_, index) => {
                     return <InactiveRow key={index} />
                 })) : 
-                ((Array.from({length: 6 - wordsGuessed.length}).map((_, index) => {
+                ((Array.from({length: 6 - guessedWords.length}).map((_, index) => {
                     return <InactiveRow key={index} />
                 })))
                 }
