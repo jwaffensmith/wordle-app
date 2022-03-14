@@ -339,8 +339,7 @@ const GameContainer = ({ word }) => {
                                     <p>{totalTime}</p>
                                     <p className="mb-4 text-sm">Time</p>
                                     <p>{gamesPlayed}</p>
-                                    <p className="mb-4 text-sm">Played</p>
-                                    <p>{(gamesWon / gamesPlayed) * 100}</p>
+                                    <p>{((gamesWon / gamesPlayed) * 100).toFixed(2)}</p>
                                     <p className="mb-4 text-sm">Win %</p>
                                 </div>
                                 )}
