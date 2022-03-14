@@ -278,7 +278,7 @@ const GameInput = ({ word }) => {
                 gameStatus={gameStatus}
                 showAlert={showAlert}
                 />
-                <div className="mx-5">
+                <div className="mx-1 md:mx-48">
                     <Keyboard
                     useEventListener={useEventListener}
                     onKeyPress={onKeyPress}
