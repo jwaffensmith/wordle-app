@@ -8,7 +8,7 @@ import Alert from "./modals/Alert";
 import words from "./words.json"
 import useEventListener from "./hooks/useEventListener"
 
-const GameInput = ({ word }) => {
+const GameContainer = ({ word }) => {
     
     // word guesses
     const [ guess, setGuess ] = useState([]);
@@ -89,10 +89,12 @@ const GameInput = ({ word }) => {
         const presentLetterKey = getLocalStorageKey("presentLetters");
         const absentLetterKey = getLocalStorageKey("absentLetters");
         const startGameKey = getLocalStorageKey("startGame");
+        const totalTimeKey = getLocalStorageKey("totalTime");
         const correctLetterClass = localStorage.getItem(correctLetterKey);
         const presentLetterClass = localStorage.getItem(presentLetterKey);
         const absentLetterClass = localStorage.getItem(absentLetterKey);
         const startGameTimestamp = JSON.parse(localStorage.getItem(startGameKey));
+        const totalTimeCalculation = JSON.parse(localStorage.getItem(totalTimeKey));
 
         if (correctLetterClass) {
             setCorrectLetters(correctLetterClass)
@@ -104,7 +106,9 @@ const GameInput = ({ word }) => {
             setAbsentLetters(absentLetterClass)
         } if (startGameTimestamp) {
             setStartGame(startGameTimestamp)
-        }
+        } if (totalTimeCalculation) {
+            setTotalTime(totalTimeCalculation)
+    }
     }, []);
 
     useEffect(() => {
@@ -126,6 +130,7 @@ const GameInput = ({ word }) => {
         const correctLetterKey = getLocalStorageKey("correctLetters");
         const absentLetterKey = getLocalStorageKey("absentLetters");
         const startGameKey = getLocalStorageKey("startGame");
+        const totalTimeKey = getLocalStorageKey("totalTime");
         localStorage.setItem(`${rowKey}`, JSON.stringify(rowIndex));
         localStorage.setItem(`${wordGuessKey}`, JSON.stringify(guessedWords));
         localStorage.setItem(`${statusKey}`, gameStatus);
@@ -133,7 +138,8 @@ const GameInput = ({ word }) => {
         localStorage.setItem(`${correctLetterKey}`, correctLetters);
         localStorage.setItem(`${absentLetterKey}`, absentLetters);
         localStorage.setItem(`${startGameKey}`, JSON.stringify(startGame));
-	}, [rowIndex, guessedWords, gameStatus, presentLetters, correctLetters, absentLetters, startGame]);
+        localStorage.setItem(`${totalTimeKey}`, JSON.stringify(totalTime));
+	}, [rowIndex, guessedWords, gameStatus, presentLetters, correctLetters, absentLetters, startGame, totalTime]);
 
 
     useEffect(() => {
@@ -228,9 +234,9 @@ const GameInput = ({ word }) => {
         // check if button pressed is a letter
         const isLetter = /^[A-Z]$/.test(button);
         // assign backspace button 
-        const isBackspace = button === '{backspace}' || button === 'Backspace'
+        const isBackspace = button === '{backspace}' 
         // assign enter button 
-        const isEnter = button === '{enter}' || button === 'Enter'
+        const isEnter = button === '{enter}'
         // assign var to complete guess of 5 letters
         const isGuessComplete = guess.length === 5;
         // assign var to game starting 
@@ -266,6 +272,8 @@ const GameInput = ({ word }) => {
             checkWordList();
         }
     }
+
+    console.log(guess)
 
     return (
         <div>
@@ -343,7 +351,7 @@ const GameInput = ({ word }) => {
         ) : null}
         { showAlert ? (
             <Alert>
-              <div className="container flex justify-center mx-auto">
+                 <div className="container flex justify-center mx-auto">
                     <div className="absolute inset-x-0 top-24 flex items-center justify-center">
                         <div className="bg-zinc-800 text-white absolute
                         rounded-lg text-700 p-4 mt-20" role="alert">
@@ -357,4 +365,4 @@ const GameInput = ({ word }) => {
     )
 }
 
-export default GameInput;  
+export default GameContainer; 
