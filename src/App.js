@@ -3,6 +3,8 @@ import Header from "./Header";
 import GameContainer from "./GameContainer";
 import getLocalStorageKey from "./helpers/getLocalStorageKey";
 import words from "./words.json"
+import { Provider } from "react-redux";
+import store from "./store"
 
 function App() {
 
@@ -23,10 +25,13 @@ function App() {
 
   return (
     <div>
-      <Header />
-      <GameContainer word={word} />
+      <Provider store={store} >
+        <Header />
+        <GameContainer word={word} />
+      </Provider>
     </div>
   );
 }
 
 export default App;
+

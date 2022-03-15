@@ -30,11 +30,11 @@ const GameBoard = ( { word, guessedWords, rowIndex, guess, gameStatus, showAlert
                 ">
                 <CompletedRows guessedWords={guessedWords} guess={guess} word={word} rowIndex={rowIndex}/>
 
-                { rowIndex <= 5 && gameStatus !== "You won!" ?
+                { rowIndex <= 5 && gameStatus !== "won" ?
                     (<ActiveRow guess={guess} showAlert={showAlert}/>) : (<></>)
                 }
 
-                { gameStatus !== "You won!" ?
+                { gameStatus !== "won" ?
                 (Array.from({length: 5 - guessedWords.length}).map((_, index) => {
                     return <InactiveRow key={index} />
                 })) : 

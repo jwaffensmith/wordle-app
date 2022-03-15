@@ -7,11 +7,15 @@ import Modal from "./modals/Modal";
 import Alert from "./modals/Alert";
 import words from "./words.json"
 import useEventListener from "./hooks/useEventListener"
+import { useSelector, useDispatch } from "react-redux";
+import changeGuess from "./actionCreators/changeGuess";
+import changeGamesWon from "./actionCreators/changeGamesWon";
+import changeGamesPlayed from "./actionCreators/changeGamesPlayed";
 
 const GameContainer = ({ word }) => {
     
-    // word guesses
-    const [ guess, setGuess ] = useState([]);
+    const { guess } = useSelector(state => state.guess);
+    const dispatch = useDispatch();
     const [ guessedWords, setGuessedWords ] = useState([]);
     const [ rowIndex, setRowIndex ] = useState(0);
 
@@ -22,8 +26,8 @@ const GameContainer = ({ word }) => {
 
     // game stats
     const [ gameStatus, setGameStatus ] = useState("");
-    const [ gamesWon, setGamesWon ] = useState(0)
-    const [ gamesPlayed, setGamesPlayed ] = useState(0);
+    const { gamesWon } = useSelector(state => state.gamesWon);
+    const { gamesPlayed } = useSelector(state => state.gamesPlayed);
     const [ startGame, setStartGame ] = useState(0);
     const [ totalTime, setTotalTime ] = useState("");
 
@@ -32,7 +36,7 @@ const GameContainer = ({ word }) => {
     const handleModalClose = () => setShowModal(false);
     const modalOpen = () => setShowModal(true);
 
-    // Error banner
+    // Alert Modal
     const [ alertMessage, setAlertMessage ] = useState("")
     const [ showAlert, setShowAlert ] = useState(false);
     const handleAlertClose = () => setShowAlert(false);
@@ -77,14 +81,6 @@ const GameContainer = ({ word }) => {
     }, []);
 
     useEffect(() => {
-        const key = getLocalStorageKey("wordsGuessed");
-        const guessWordList = JSON.parse(localStorage.getItem(key));
-        if (guessWordList) {
-            setGuessedWords(guessWordList)
-        }
-    }, []);
-
-    useEffect(() => {
         const correctLetterKey = getLocalStorageKey("correctLetters");
         const presentLetterKey = getLocalStorageKey("presentLetters");
         const absentLetterKey = getLocalStorageKey("absentLetters");
@@ -95,7 +91,8 @@ const GameContainer = ({ word }) => {
         const absentLetterClass = localStorage.getItem(absentLetterKey);
         const startGameTimestamp = JSON.parse(localStorage.getItem(startGameKey));
         const totalTimeCalculation = JSON.parse(localStorage.getItem(totalTimeKey));
-
+        const totalGames = JSON.parse(localStorage.getItem("gamesPlayed"));
+        const totalWon = JSON.parse(localStorage.getItem("gamesWon"));
         if (correctLetterClass) {
             setCorrectLetters(correctLetterClass)
         } 
@@ -108,17 +105,12 @@ const GameContainer = ({ word }) => {
             setStartGame(startGameTimestamp)
         } if (totalTimeCalculation) {
             setTotalTime(totalTimeCalculation)
-    }
-    }, []);
-
-    useEffect(() => {
-        const totalGames = JSON.parse(localStorage.getItem("gamesPlayed"));
-        const totalWon = JSON.parse(localStorage.getItem("gamesWon"));
+        }
         if (totalGames) {
-            setGamesPlayed(totalGames)
+            dispatch(changeGamesPlayed(totalGames));
         }
         if (totalWon) {
-            setGamesWon(totalWon)
+            dispatch(changeGamesWon(totalWon));
         }
     }, []);
 
@@ -139,14 +131,9 @@ const GameContainer = ({ word }) => {
         localStorage.setItem(`${absentLetterKey}`, absentLetters);
         localStorage.setItem(`${startGameKey}`, JSON.stringify(startGame));
         localStorage.setItem(`${totalTimeKey}`, JSON.stringify(totalTime));
-	}, [rowIndex, guessedWords, gameStatus, presentLetters, correctLetters, absentLetters, startGame, totalTime]);
-
-
-    useEffect(() => {
         localStorage.setItem("gamesPlayed", JSON.stringify(gamesPlayed));
         localStorage.setItem("gamesWon", JSON.stringify(gamesWon));
-    }, [gamesPlayed, gamesWon]);
-
+	}, [rowIndex, guessedWords, gameStatus, presentLetters, correctLetters, absentLetters, startGame, totalTime, gamesPlayed, gamesWon]);
 
     function virtualKeyboardClasses() {
         let presentLetterArr = [];
@@ -162,20 +149,19 @@ const GameContainer = ({ word }) => {
                 absentLetterArr.push(guess[i])
                 }
             }
-    
             return (
-                setCorrectLetters((prev) => prev + " " + correctLetterArr.join(' ')),
-                setPresentLetters((prev) => prev + " " + presentLetterArr.join(' ')),
-                setAbsentLetters((prev) => prev + " " + absentLetterArr.join(' '))
+                setCorrectLetters(`${correctLetters} ${correctLetterArr.join(' ')}`),
+                setPresentLetters(`${presentLetters} ${presentLetterArr.join(' ')}`),
+                setAbsentLetters(`${absentLetters} ${absentLetterArr.join(' ')}`)
             )
     };
 
     function checkWordList() {
         const wordGuess = guess.join('');
         if (words.includes(wordGuess.toLowerCase())) {
-            setGuessedWords((prev) => [...prev, guess.join('')]);
-            setGuess([]);
-            setRowIndex((index) => (index + 1));
+            setGuessedWords([...guessedWords, guess.join('')]);
+            dispatch(changeGuess([]));
+            setRowIndex(rowIndex + 1);
             virtualKeyboardClasses();
             if (guess.join('') === word) {
                 winGame();
@@ -198,7 +184,6 @@ const GameContainer = ({ word }) => {
 
     function calculateTotalTime() {
         const endGameTimestamp = Date.now()
-        console.log(endGameTimestamp);
         const total = endGameTimestamp - startGame
         let seconds = Math.floor(total / 1000);
         let minutes = Math.floor(seconds / 60);
@@ -210,17 +195,17 @@ const GameContainer = ({ word }) => {
     }
 
     function winGame() {
-        setGameStatus("You won!");
-        setGamesPlayed((prev) => (prev + 1));
-        setGamesWon((prev) => (prev + 1));
-        setRowIndex((index) => (index + 1));
+        setGameStatus("won");
+        dispatch(changeGamesPlayed(gamesPlayed + 1));
+        dispatch(changeGamesWon(gamesWon + 1));
+        setRowIndex(rowIndex + 1);
         calculateTotalTime();
         return modalOpen();
     };
 
     function loseGame() {
-        setGameStatus("Bummer, try again tomorrow.");
-        setGamesPlayed((prev) => (prev + 1))
+        setGameStatus("lost");
+        dispatch(changeGamesPlayed(gamesPlayed + 1));
         calculateTotalTime();
         return modalOpen();
     }
@@ -231,49 +216,32 @@ const GameContainer = ({ word }) => {
     });
 
     const onKeyPress = button => {
-        // check if button pressed is a letter
         const isLetter = /^[A-Z]$/.test(button);
-        // assign backspace button 
         const isBackspace = button === '{backspace}' 
-        // assign enter button 
         const isEnter = button === '{enter}'
-        // assign var to complete guess of 5 letters
         const isGuessComplete = guess.length === 5;
-        // assign var to game starting 
         const gameInProgress = guess.length === 0 && rowIndex === 0;
-
-        // set timestamp on first keystroke
         if (isLetter && gameInProgress) {
-            setGameStatus("IN_PROGRESS");
+            setGameStatus("inProgress");
             const time = Date.now()
             setStartGame(time);
         }
-
-        // delete input
         if (isBackspace) {
-            setGuess((prev) => {
-                const updatedGuess = [...prev];
-                updatedGuess.pop();
-                return updatedGuess
-            });
+            const updatedGuess = [...guess];
+            updatedGuess.pop();
+            dispatch(changeGuess([...updatedGuess]
+            ));
         }
-        
-        // user cannot got to next row when guess is less than 5 letters
         if (isEnter && !isGuessComplete) {
             setAlertMessage("Not enough letters")
             alertOpen()
-        // if less than 5 letters, continue to set state to guess
         } else if (isLetter && !isGuessComplete) {
-            setGuess((prev) => [...prev, button]);
-
-        // submit input when guess is 5 letters
-        // check if word is in word list
+            const payload = [...guess, button]
+            dispatch(changeGuess(payload));
         } else if (isGuessComplete && isEnter) {
             checkWordList();
         }
     }
-
-    console.log(guess)
 
     return (
         <div>
@@ -329,13 +297,9 @@ const GameContainer = ({ word }) => {
                                         d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            { gameStatus === "IN_PROGRESS" ? (
+                            { gameStatus === "won" ? (
                                 <div className="mt-3 p-5 mx-3">
-                                   <h4 className="mb-4 text-sm pt-3">Today's game is in progress.</h4>
-                               </div>
-                            ) : (
-                                <div className="mt-3 p-5 mx-3">
-                                    <p className="mb-4 text-lg pt-3">{gameStatus}</p>
+                                    <p className="mb-4 text-lg pt-3">Well done!</p>
                                     <p>{totalTime}</p>
                                     <p className="mb-4 text-sm">Time</p>
                                     <p>{gamesPlayed}</p>
@@ -343,7 +307,29 @@ const GameContainer = ({ word }) => {
                                     <p>{((gamesWon / gamesPlayed) * 100).toFixed(0)}</p>
                                     <p className="mb-4 text-sm">Win %</p>
                                 </div>
-                                )}
+                            ) : (
+                               null
+                            )}
+                            { gameStatus === "lost" ? (
+                            <div className="mt-3 p-5 mx-3">
+                                <p className="mb-4 text-lg pt-3">Try Again Tomorrow</p>
+                                <p>{totalTime}</p>
+                                <p className="mb-4 text-sm">Time</p>
+                                <p>{gamesPlayed}</p>
+                                <p className="mb-4 text-sm">Played</p>
+                                <p>{((gamesWon / gamesPlayed) * 100).toFixed(0)}</p>
+                                <p className="mb-4 text-sm">Win %</p>
+                            </div>
+                        ) : ( 
+                            null
+                        )}
+                        { gameStatus === "inProgress" ? (
+                        <div className="mt-3 p-5 mx-3">
+                            <p className="mb-4 text-lg pt-3">Game in Progress</p>
+                        </div>
+                            ) : ( 
+                                null
+                            )}
                         </div>
                     </div>
                 </div>
