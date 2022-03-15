@@ -5,19 +5,17 @@ module.exports = {
   theme: {
     extend: {
         keyframes: {
-          wiggle: {
+          'wiggle': {
             "0%, 100%": { transform: "rotate(-3deg)" },
             "50%": { transform: "rotate(3deg)" }
           },
-          'fade-in-down': {
-            '0%': {
-                opacity: '0',
-                transform: 'translateY(-10px)'
-            },
-            '100%': {
-                opacity: '1',
-                transform: 'translateY(0)'
-            }
+          'flip': {
+            from:{
+              transform: 'rotateX(270deg)'
+             },
+            to:{
+              transform: 'rotateX(360deg)'
+             }
           },
           'shake': {
             "10%, 90%": {
@@ -39,10 +37,11 @@ module.exports = {
         },
         animation: {
         wiggle: "wiggle 2s ease-in-out infinite",
-        'fade-in-down': 'fade-in-down 1s ease-out',
+        'flip': 'flip 1s ease-in-out',
         'shake': 'shake 0.82s cubic-bezier(.36,.07,.19,.97) both'
       }
     },
   },
   plugins: [],
 }
+
