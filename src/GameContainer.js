@@ -45,6 +45,7 @@ const GameContainer = ({ word }) => {
         setTimeout(handleAlertClose, 2000);
     }
 
+    // localstorage getItem
     useEffect(() => {
         const key = getLocalStorageKey("wordsGuessed");
         const guessWordList = JSON.parse(localStorage.getItem(key));
@@ -114,6 +115,7 @@ const GameContainer = ({ word }) => {
         }
     }, []);
 
+    // localstorage setItem
     useEffect(() => {
         const rowKey = getLocalStorageKey("rowIndex");
         const wordGuessKey = getLocalStorageKey("wordsGuessed");
@@ -135,6 +137,7 @@ const GameContainer = ({ word }) => {
         localStorage.setItem("gamesWon", JSON.stringify(gamesWon));
 	}, [rowIndex, guessedWords, gameStatus, presentLetters, correctLetters, absentLetters, startGame, totalTime, gamesPlayed, gamesWon]);
 
+    // add classes to virtual keyboard buttons
     function virtualKeyboardClasses() {
         let presentLetterArr = [];
         let correctLetterArr = [];
@@ -156,6 +159,7 @@ const GameContainer = ({ word }) => {
             )
     };
 
+    // check guess in word list
     function checkWordList() {
         const wordGuess = guess.join('');
         if (words.includes(wordGuess.toLowerCase())) {
@@ -178,6 +182,7 @@ const GameContainer = ({ word }) => {
         }
     }
 
+    //functions to caluclate and format total time played
     function padTo2Digits(num) {
         return num.toString().padStart(2, '0');
       }
@@ -194,6 +199,8 @@ const GameContainer = ({ word }) => {
         return setTotalTime(`${padTo2Digits(hours)}:${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`)
     }
 
+
+    // win game function 
     function winGame() {
         setGameStatus("won");
         dispatch(changeGamesPlayed(gamesPlayed + 1));
@@ -203,6 +210,7 @@ const GameContainer = ({ word }) => {
         return modalOpen();
     };
 
+    // lose game function
     function loseGame() {
         setGameStatus("lost");
         dispatch(changeGamesPlayed(gamesPlayed + 1));
@@ -210,11 +218,13 @@ const GameContainer = ({ word }) => {
         return modalOpen();
     }
 
+    // custom hook for transforming lowercase letter input from physical keyboard
     useEventListener("keydown", ({key}) => { 
         key = key.toUpperCase(); 
         onKeyPress(key) 
     });
 
+    // store and check user input 
     const onKeyPress = button => {
         const isLetter = /^[A-Z]$/.test(button);
         const isBackspace = button === '{backspace}' 
@@ -235,10 +245,10 @@ const GameContainer = ({ word }) => {
         if (isEnter && !isGuessComplete) {
             setAlertMessage("Not enough letters")
             alertOpen()
-        } else if (isLetter && !isGuessComplete) {
+        } if (isLetter && !isGuessComplete) {
             const payload = [...guess, button]
             dispatch(changeGuess(payload));
-        } else if (isGuessComplete && isEnter) {
+        } if (isGuessComplete && isEnter) {
             checkWordList();
         }
     }
@@ -288,7 +298,7 @@ const GameContainer = ({ word }) => {
             {showModal ? (
             <Modal>
                 <div className="flex justify-center">
-                    <div className="absolute inset-x-0 top-64 flex items-center justify-center">
+                    <div className="absolute inset-x-0 top-48 flex items-center justify-center">
                         <div className="max-w-sm p-6 bg-white divide-y divide-gray-500">
                             <div className="flex items-center justify-between">
                                 <h5 className="px-3">Statistics</h5>
