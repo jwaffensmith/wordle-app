@@ -248,7 +248,7 @@ const GameContainer = ({ word }) => {
         } if (isLetter && !isGuessComplete) {
             const payload = [...guess, button]
             dispatch(changeGuess(payload));
-        } if (isGuessComplete && isEnter) {
+        } if (isGuessComplete && isEnter && rowIndex < 6) {
             checkWordList();
         }
     }
