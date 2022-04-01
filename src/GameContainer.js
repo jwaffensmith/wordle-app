@@ -242,7 +242,7 @@ const GameContainer = ({ word }) => {
             dispatch(changeGuess([...updatedGuess]
             ));
         }
-        if (isEnter && !isGuessComplete) {
+        if (isEnter && !isGuessComplete && rowIndex < 6) {
             setAlertMessage("Not enough letters")
             alertOpen()
         } if (isLetter && !isGuessComplete) {
